@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蔬菜學各論 Scientific Name_final</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f4f8; /* Light blue-grey background */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #ffffff; /* White container background */
+            padding: 25px 30px;
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1); /* Softer shadow */
+            width: 100%;
+            max-width: 700px; /* Slightly wider */
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50; /* Darker blue for heading */
+            margin-bottom: 25px;
+        }
+        .mode-selector {
+            margin-bottom: 25px;
+            text-align: center;
+            background-color: #e9ecef; /* Light grey for mode selector */
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .mode-selector label {
+            margin: 0 15px; /* More spacing */
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+        .mode-selector input[type="radio"] {
+            margin-right: 8px;
+            transform: scale(1.2); /* Slightly larger radio buttons */
+        }
+        .question-area, .answer-area, .feedback-area, .controls {
+            margin-bottom: 20px;
+        }
+        .question-area strong {
+            font-size: 1.3em; /* Larger scientific name */
+            color: #3498db; /* Blue for scientific name */
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #555; /* Dark grey for labels */
+            font-size: 1.05em;
+        }
+        input[type="text"] {
+            width: calc(100% - 24px); /* Adjust for padding */
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ced4da; /* Lighter border */
+            border-radius: 6px; /* More rounded inputs */
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        input[type="text"]:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            outline: none;
+        }
+        button {
+            background-color: #3498db; /* Primary blue */
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1em;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9; /* Darker blue on hover */
+        }
+        #next-btn {
+            background-color: #28a745; /* Green for next */
+        }
+        #next-btn:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+        .feedback-correct {
+            color: #28a745; /* Green for correct */
+            font-weight: bold;
+            padding: 10px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+        }
+        .feedback-incorrect-summary { /* Renamed for clarity */
+            color: #dc3545; /* Red for incorrect */
+            font-weight: bold;
+        }
+        .correct-answer-details {
+            background-color: #f8d7da; /* Light red background for details */
+            border-left: 5px solid #dc3545; /* Red left border */
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 6px;
+        }
+        .correct-answer-details p {
+            margin: 8px 0;
+            color: #721c24; /* Darker red for text within details */
+        }
+        .mc-options div {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #f8f9fa; /* Very light grey for each option */
+        }
+        .mc-options div:hover {
+            background-color: #e9ecef; /* Slightly darker on hover */
+        }
+        .mc-options label {
+            font-weight: normal;
+            margin-left: 8px;
+            font-size: 1em;
+            color: #333;
+        }
+        .mc-options input[type="radio"] {
+            transform: scale(1.1);
+            margin-right: 5px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .mode-selector label {
+                display: block;
+                margin: 10px 0;
+            }
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            #next-btn {
+                 margin-right: 0; /* Remove right margin on small screens if buttons stack */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>蔬菜學各論 Scientific Name_final</h1>
+
+        <div class="mode-selector">
+            <label><input type="radio" name="mode" value="fill" checked> 填充題</label>
+            <label><input type="radio" name="mode" value="mc"> 選擇題</label>
+        </div>
+
+        <div class="question-area">
+            <p><strong>學名：</strong> <span id="scientific-name"></span></p>
+        </div>
+
+        <div class="answer-area">
+            <div id="fill-in-section">
+                <div>
+                    <label for="chinese-name-input">中文名稱：</label>
+                    <input type="text" id="chinese-name-input" aria-label="中文名稱">
+                </div>
+                <div>
+                    <label for="english-name-input">英文名稱：</label>
+                    <input type="text" id="english-name-input" aria-label="英文名稱">
+                </div>
+                <div>
+                    <label for="family-name-input">科名：</label>
+                    <input type="text" id="family-name-input" aria-label="科名">
+                </div>
+            </div>
+            <div id="mc-section" style="display: none;">
+                <div>
+                    <label>中文名稱：</label>
+                    <div id="chinese-name-options" class="mc-options" role="radiogroup" aria-labelledby="chinese-name-label"></div>
+                </div>
+                <div>
+                    <label>英文名稱：</label>
+                    <div id="english-name-options" class="mc-options" role="radiogroup" aria-labelledby="english-name-label"></div>
+                </div>
+                <div>
+                    <label>科名：</label>
+                    <div id="family-name-options" class="mc-options" role="radiogroup" aria-labelledby="family-name-label"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="submit-btn">提交答案</button>
+            <button id="next-btn" style="display: none;">下一題</button>
+        </div>
+
+        <div class="feedback-area" id="feedback" aria-live="polite"></div>
+    </div>
+
+    <script>
+        // Plant data array
+        const plantData = [
+            {學名: "Cucumis sativus L.", 中名: "胡瓜", 英名: "cucumber", 科名: "葫蘆科"},
+            {學名: "Luffa aegyptiaca Mill.", 中名: "絲瓜", 英名: "vegetable sponge", 科名: "葫蘆科"},
+            {學名: "Citrullus lanatus (Thunb.) Matsum & Nakai", 中名: "西瓜", 英名: "water melon", 科名: "葫蘆科"},
+            {學名: "Cucumis melo L.", 中名: "甜瓜", 英名: "Melon", 科名: "葫蘆科"},
+            {學名: "Benincasa hispda (Thunb.) Cogn.", 中名: "冬瓜", 英名: "Wax gourd", 科名: "葫蘆科"},
+            {學名: "Momordica charanita L.", 中名: "苦瓜", 英名: "Bitter gourd", 科名: "葫蘆科"},
+            {學名: "Cucumis melo L. Connomon Group", 中名: "越瓜", 英名: "Oriental piking melon", 科名: "葫蘆科"},
+            {學名: "Lagenaria siceraria (Mol.) Standl.", 中名: "扁蒲", 英名: "Bottle gourd", 科名: "葫蘆科"},
+            {學名: "Cucurbita spp.", 中名: "南瓜", 英名: "pumpkin", 科名: "葫蘆科"},
+            {學名: "Solanum lycopersicon L.", 中名: "番茄", 英名: "tomato", 科名: "茄科"},
+            {學名: "Solanum melongena L.", 中名: "茄子", 英名: "eggplant", 科名: "茄科"},
+            {學名: "Allium cepa L.", 中名: "洋蔥", 英名: "onion", 科名: "石蒜科"},
+            {學名: "Allium sativum L.", 中名: "大蒜", 英名: "garlic", 科名: "石蒜科"},
+            {學名: "Allium fistulosum L.", 中名: "青蔥", 英名: "welsh onion", 科名: "石蒜科"},
+            {學名: "Allium tuberosum Rottl. ex K. Spreng", 中名: "韭菜", 英名: "Chinese leek", 科名: "石蒜科"},
+            {學名: "Hemerocallis fulva L.", 中名: "金針菜", 英名: "Daylily", 科名: "阿福花科"},
+            {學名: "Pisum sativum L.", 中名: "碗豆", 英名: "Snap pea", 科名: "豆科"},
+            {學名: "Phaseolus vulgaris L.", 中名: "菜豆", 英名: "Snap bean", 科名: "豆科"},
+            {學名: "Vigna unguiculata (L.) Walp. ssp. sesquipedalis (L.) Verdc.", 中名: "豇豆", 英名: "Yard-long bean", 科名: "豆科"},
+            {學名: "Glycine max (L.) Merr.", 中名: "毛豆", 英名: "Vegetable soybean", 科名: "豆科"},
+            {學名: "Phaseolus lunatus L.", 中名: "萊豆", 英名: "Lima bean", 科名: "豆科"},
+            {學名: "Hibiscus esculentus L.", 中名: "黃秋葵", 英名: "Okra", 科名: "錦葵科"},
+            {學名: "Fragaria ×ananassa Duchesne (F. chiloensis ×F. viginiana)", 中名: "草莓", 英名: "strawberry", 科名: "薔薇科"}
+        ];
+
+        let currentQuestionIndex = 0;
+        let shuffledData = [];
+        let currentMode = 'fill'; // Default mode: 'fill' or 'mc'
+
+        // DOM Elements
+        const scientificNameEl = document.getElementById('scientific-name');
+        const chineseNameInputEl = document.getElementById('chinese-name-input');
+        const englishNameInputEl = document.getElementById('english-name-input');
+        const familyNameInputEl = document.getElementById('family-name-input');
+
+        const chineseNameOptionsEl = document.getElementById('chinese-name-options');
+        const englishNameOptionsEl = document.getElementById('english-name-options');
+        const familyNameOptionsEl = document.getElementById('family-name-options');
+
+        const feedbackEl = document.getElementById('feedback');
+        const submitBtn = document.getElementById('submit-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        const fillInSection = document.getElementById('fill-in-section');
+        const mcSection = document.getElementById('mc-section');
+        const modeRadios = document.querySelectorAll('input[name="mode"]');
+
+        // Function to shuffle an array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Function to get unique random items from an array, excluding a specific item
+        function getUniqueRandomItems(arr, count, excludeItem) {
+            const uniqueItems = new Set();
+            // Create a new array excluding the item to avoid picking it as a wrong option
+            const filteredArr = arr.filter(item => item !== excludeItem);
+            
+            // Shuffle the filtered array to get random items
+            shuffleArray(filteredArr);
+
+            for (let i = 0; i < filteredArr.length && uniqueItems.size < count; i++) {
+                uniqueItems.add(filteredArr[i]);
+            }
+            
+            // If not enough unique items from filtered list (e.g., small dataset),
+            // try to add more from the original list, still excluding the 'excludeItem'
+            if (uniqueItems.size < count) {
+                const fullShuffledArr = [...arr];
+                shuffleArray(fullShuffledArr);
+                for(const item of fullShuffledArr){
+                    if(item !== excludeItem && uniqueItems.size < count){
+                        uniqueItems.add(item);
+                    }
+                }
+            }
+            return Array.from(uniqueItems);
+        }
+
+        // Function to generate multiple-choice options
+        function generateMcOptions(correctAnswer, categoryKey) {
+            const allPossibleAnswers = [...new Set(plantData.map(p => p[categoryKey]))]; // Get all unique values for this category
+            let options = getUniqueRandomItems(allPossibleAnswers, 3, correctAnswer);
+            options.push(correctAnswer);
+            shuffleArray(options); // Shuffle to randomize position of correct answer
+            return options;
+        }
+
+        // Function to display the current question
+        function displayQuestion() {
+            if (currentQuestionIndex >= shuffledData.length) {
+                // Quiz finished
+                scientificNameEl.textContent = "測驗完成！";
+                fillInSection.style.display = 'none';
+                mcSection.style.display = 'none';
+                submitBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                feedbackEl.innerHTML = `<p class="feedback-correct">您已完成所有題目！感謝您的參與。</p>`;
+                document.querySelector('.mode-selector').style.display = 'none';
+                return;
+            }
+
+            const currentPlant = shuffledData[currentQuestionIndex];
+            scientificNameEl.textContent = currentPlant.學名;
+
+            // Reset input fields, feedback, and enable inputs
+            feedbackEl.innerHTML = '';
+            clearAndEnableFillInInputs();
+            clearMcOptions();
+
+
+            if (currentMode === 'fill') {
+                fillInSection.style.display = 'block';
+                mcSection.style.display = 'none';
+            } else { // mc mode
+                fillInSection.style.display = 'none';
+                mcSection.style.display = 'block';
+                // Render multiple-choice options
+                renderMcOptions(currentPlant.中名, '中名', chineseNameOptionsEl, 'chinese_opt');
+                renderMcOptions(currentPlant.英名, '英名', englishNameOptionsEl, 'english_opt');
+                renderMcOptions(currentPlant.科名, '科名', familyNameOptionsEl, 'family_opt');
+            }
+
+            submitBtn.style.display = 'inline-block';
+            nextBtn.style.display = 'none';
+        }
+        
+        function clearAndEnableFillInInputs() {
+            chineseNameInputEl.value = '';
+            englishNameInputEl.value = '';
+            familyNameInputEl.value = '';
+            chineseNameInputEl.disabled = false;
+            englishNameInputEl.disabled = false;
+            familyNameInputEl.disabled = false;
+        }
+
+        // Function to clear multiple-choice options
+        function clearMcOptions() {
+            chineseNameOptionsEl.innerHTML = '';
+            englishNameOptionsEl.innerHTML = '';
+            familyNameOptionsEl.innerHTML = '';
+        }
+
+        // Function to render multiple-choice options for a category
+        function renderMcOptions(correctAnswer, categoryKey, containerElement, radioGroupName) {
+            containerElement.innerHTML = ''; // Clear previous options
+            const options = generateMcOptions(correctAnswer, categoryKey);
+            options.forEach((opt, index) => {
+                const div = document.createElement('div');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = radioGroupName;
+                radio.value = opt;
+                radio.id = `${radioGroupName}_${index}`; // Unique ID for label association
+
+                const label = document.createElement('label');
+                label.htmlFor = `${radioGroupName}_${index}`;
+                label.textContent = opt;
+
+                div.appendChild(radio);
+                div.appendChild(label);
+                containerElement.appendChild(div);
+            });
+        }
+
+        // Function to check the submitted answer
+        function checkAnswer() {
+            if (currentQuestionIndex >= shuffledData.length) return; // Should not happen if buttons are managed
+
+            const currentPlant = shuffledData[currentQuestionIndex];
+            let allCorrect = true;
+            let feedbackHTML = '';
+
+            let userChinese, userEnglish, userFamily;
+
+            if (currentMode === 'fill') {
+                userChinese = chineseNameInputEl.value.trim();
+                userEnglish = englishNameInputEl.value.trim().toLowerCase(); // Case-insensitive for English
+                userFamily = familyNameInputEl.value.trim();
+
+                if (userChinese !== currentPlant.中名) {
+                    allCorrect = false;
+                    feedbackHTML += `<p>中文名稱錯誤。您的答案：「${userChinese || '未填寫'}」，正確答案：「<strong>${currentPlant.中名}</strong>」</p>`;
+                }
+                if (userEnglish !== currentPlant.英名.toLowerCase()) {
+                    allCorrect = false;
+                    feedbackHTML += `<p>英文名稱錯誤。您的答案：「${englishNameInputEl.value.trim() || '未填寫'}」，正確答案：「<strong>${currentPlant.英名}</strong>」</p>`;
+                }
+                if (userFamily !== currentPlant.科名) {
+                    allCorrect = false;
+                    feedbackHTML += `<p>科名錯誤。您的答案：「${userFamily || '未填寫'}」，正確答案：「<strong>${currentPlant.科名}</strong>」</p>`;
+                }
+                // Disable fill-in inputs after submission
+                chineseNameInputEl.disabled = true;
+                englishNameInputEl.disabled = true;
+                familyNameInputEl.disabled = true;
+
+            } else { // mc mode
+                const selectedChineseRadio = document.querySelector('input[name="chinese_opt"]:checked');
+                const selectedEnglishRadio = document.querySelector('input[name="english_opt"]:checked');
+                const selectedFamilyRadio = document.querySelector('input[name="family_opt"]:checked');
+
+                userChinese = selectedChineseRadio ? selectedChineseRadio.value : "";
+                userEnglish = selectedEnglishRadio ? selectedEnglishRadio.value : "";
+                userFamily = selectedFamilyRadio ? selectedFamilyRadio.value : "";
+
+                if (userChinese !== currentPlant.中名) {
+                    allCorrect = false;
+                    feedbackHTML += `<p>中文名稱選擇錯誤。您的選擇：「${userChinese || '未選擇'}」，正確答案：「<strong>${currentPlant.中名}</strong>」</p>`;
+                }
+                 if (userEnglish !== currentPlant.英名) { 
+                    allCorrect = false;
+                    feedbackHTML += `<p>英文名稱選擇錯誤。您的選擇：「${userEnglish || '未選擇'}」，正確答案：「<strong>${currentPlant.英名}</strong>」</p>`;
+                }
+                if (userFamily !== currentPlant.科名) {
+                    allCorrect = false;
+                    feedbackHTML += `<p>科名選擇錯誤。您的選擇：「${userFamily || '未選擇'}」，正確答案：「<strong>${currentPlant.科名}</strong>」</p>`;
+                }
+                // Disable MCQs after submission
+                document.querySelectorAll('#mc-section input[type="radio"]').forEach(radio => radio.disabled = true);
+            }
+
+
+            if (allCorrect) {
+                feedbackEl.innerHTML = '<p class="feedback-correct">全部正確！做得好！</p>';
+            } else {
+                feedbackEl.innerHTML = `<div class="feedback-incorrect-summary">部分答案錯誤，請看以下訂正：</div><div class="correct-answer-details">${feedbackHTML}</div>`;
+            }
+
+            submitBtn.style.display = 'none';
+            if (currentQuestionIndex < shuffledData.length -1 || (currentQuestionIndex === shuffledData.length -1 && !allCorrect) || (currentQuestionIndex === shuffledData.length -1 && allCorrect) ) {
+                 nextBtn.style.display = 'inline-block';
+                 if(currentQuestionIndex === shuffledData.length -1) {
+                    nextBtn.textContent = "查看最終結果"; // Or "結束測驗"
+                 } else {
+                    nextBtn.textContent = "下一題";
+                 }
+            } else {
+                 nextBtn.style.display = 'none'; // Should be handled by quiz completion logic
+            }
+        }
+
+        // Event listeners
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', (event) => {
+                currentMode = event.target.value;
+                // Redisplay current question in new mode, don't advance or reset feedback if already answered
+                // Only call displayQuestion if the current question hasn't been answered yet (submitBtn is visible)
+                if (submitBtn.style.display !== 'none') {
+                    displayQuestion();
+                }
+            });
+        });
+
+        submitBtn.addEventListener('click', checkAnswer);
+        
+        nextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            displayQuestion(); // This will handle quiz completion
+        });
+
+        // Initialization
+        function initializeQuiz() {
+            shuffledData = [...plantData]; // Create a mutable copy
+            shuffleArray(shuffledData);
+            currentQuestionIndex = 0;
+            displayQuestion();
+            document.querySelector('.mode-selector').style.display = 'block'; // Ensure mode selector is visible at start
+        }
+
+        initializeQuiz(); // Start the quiz
+
+    </script>
+</body>
+</html>

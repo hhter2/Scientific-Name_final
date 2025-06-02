@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>植物學習測驗</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .quiz-section {
+            margin-bottom: 20px;
+        }
+        .scientific-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #27ae60;
+            text-align: center;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        .question-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .question-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #34495e;
+            font-size: 16px;
+        }
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .mode-btn {
+            padding: 8px 16px;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        .mode-btn:hover {
+            background: #2980b9;
+            color: white;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option-btn {
+            padding: 12px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .option-btn:hover {
+            border-color: #3498db;
+            background: #ecf0f1;
+        }
+        .option-btn.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 12px 24px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #229954;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .result.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .score {
+            text-align: center;
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .correct-answer {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌱 植物學習測驗</h1>
+        
+        <div class="score">
+            得分：<span id="score">0</span> / <span id="total">0</span>
+        </div>
+
+        <div class="quiz-section">
+            <div class="scientific-name" id="scientificName"></div>
+            
+            <div class="question-group">
+                <div class="question-label">中文名稱：</div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="setMode('chinese', 'input')">填空</button>
+                    <button class="mode-btn" onclick="setMode('chinese', 'choice')">選擇</button>
+                </div>
+                <input type="text" id="chineseInput" placeholder="請輸入中文名稱">
+                <div class="options" id="chineseOptions" style="display: none;"></div>
+            </div>
+
+            <div class="question-group">
+                <div class="question-label">英文名稱：</div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="setMode('english', 'input')">填空</button>
+                    <button class="mode-btn" onclick="setMode('english', 'choice')">選擇</button>
+                </div>
+                <input type="text" id="englishInput" placeholder="請輸入英文名稱">
+                <div class="options" id="englishOptions" style="display: none;"></div>
+            </div>
+
+            <div class="question-group">
+                <div class="question-label">科名：</div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="setMode('family', 'input')">填空</button>
+                    <button class="mode-btn" onclick="setMode('family', 'choice')">選擇</button>
+                </div>
+                <input type="text" id="familyInput" placeholder="請輸入科名">
+                <div class="options" id="familyOptions" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="checkAnswer()">檢查答案</button>
+            <button class="btn btn-secondary" onclick="nextQuestion()">下一題</button>
+        </div>
+
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const plantData = [
+            {scientific: "Cucumis sativus L.", chinese: "胡瓜", english: "cucumber", family: "葫蘆科"},
+            {scientific: "Luffa aegyptiaca Mill.", chinese: "絲瓜", english: "vegetable sponge", family: "葫蘆科"},
+            {scientific: "Citrullus lanatus (Thunb.) Matsum & Nakai", chinese: "西瓜", english: "water melon", family: "葫蘆科"},
+            {scientific: "Cucumis melo L.", chinese: "甜瓜", english: "Melon", family: "葫蘆科"},
+            {scientific: "Benincasa hispda (Thunb.) Cogn.", chinese: "冬瓜", english: "Wax gourd", family: "葫蘆科"},
+            {scientific: "Momordica charanita L.", chinese: "苦瓜", english: "Bitter gourd", family: "葫蘆科"},
+            {scientific: "Cucumis melo L. Connomon Group", chinese: "越瓜", english: "Oriental piking melon", family: "葫蘆科"},
+            {scientific: "Lagenaria siceraria (Mol.) Standl.", chinese: "扁蒲", english: "Bottle gourd", family: "葫蘆科"},
+            {scientific: "Cucurbita spp.", chinese: "南瓜", english: "pumpkin", family: "葫蘆科"},
+            {scientific: "Solanum lycopersicon L.", chinese: "番茄", english: "tomato", family: "茄科"},
+            {scientific: "Solanum melongena L.", chinese: "茄子", english: "eggplant", family: "茄科"},
+            {scientific: "Allium cepa L.", chinese: "洋蔥", english: "onion", family: "石蒜科"},
+            {scientific: "Allium sativum L.", chinese: "大蒜", english: "garlic", family: "石蒜科"},
+            {scientific: "Allium fistulosum L.", chinese: "青蔥", english: "welsh onion", family: "石蒜科"},
+            {scientific: "Allium tuberosum Rottl. ex K. Spreng", chinese: "韭菜", english: "Chinese leek", family: "石蒜科"},
+            {scientific: "Hemerocallis fulva L.", chinese: "金針菜", english: "Daylily", family: "阿福花科"},
+            {scientific: "Pisum sativum L.", chinese: "碗豆", english: "Snap pea", family: "豆科"},
+            {scientific: "Phaseolus vulgaris L.", chinese: "菜豆", english: "Snap bean", family: "豆科"},
+            {scientific: "Vigna unguiculata (L.) Walp. ssp. sesquipedalis (L.) Verdc.", chinese: "豇豆", english: "Yard-long bean", family: "豆科"},
+            {scientific: "Glycine max (L.) Merr.", chinese: "毛豆", english: "Vegetable soybean", family: "豆科"},
+            {scientific: "Phaseolus lunatus L.", chinese: "萊豆", english: "Lima bean", family: "豆科"},
+            {scientific: "Hibiscus esculentus L.", chinese: "黃秋葵", english: "Okra", family: "錦葵科"},
+            {scientific: "Fragaria ×ananassa Duchesne (F. chiloensis ×F. viginiana)", chinese: "草莓", english: "strawberry", family: "薔薇科"}
+        ];
+
+        let currentPlant = null;
+        let currentMode = {
+            chinese: 'input',
+            english: 'input',
+            family: 'input'
+        };
+        let score = 0;
+        let total = 0;
+        let selectedAnswers = {
+            chinese: '',
+            english: '',
+            family: ''
+        };
+
+        function getRandomPlant() {
+            return plantData[Math.floor(Math.random() * plantData.length)];
+        }
+
+        function generateOptions(correctAnswer, type) {
+            const allAnswers = plantData.map(plant => plant[type]);
+            const uniqueAnswers = [...new Set(allAnswers)];
+            
+            const options = [correctAnswer];
+            while (options.length < 4) {
+                const randomAnswer = uniqueAnswers[Math.floor(Math.random() * uniqueAnswers.length)];
+                if (!options.includes(randomAnswer)) {
+                    options.push(randomAnswer);
+                }
+            }
+            
+            // 打亂順序
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        function setMode(type, mode) {
+            currentMode[type] = mode;
+            
+            // 更新按鈕狀態
+            const modeButtons = document.querySelectorAll(`.question-group:nth-child(${getQuestionIndex(type)}) .mode-btn`);
+            modeButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 顯示對應的輸入方式
+            const input = document.getElementById(`${type}Input`);
+            const options = document.getElementById(`${type}Options`);
+            
+            if (mode === 'input') {
+                input.style.display = 'block';
+                options.style.display = 'none';
+                selectedAnswers[type] = '';
+            } else {
+                input.style.display = 'none';
+                options.style.display = 'grid';
+                setupOptions(type);
+            }
+        }
+
+        function getQuestionIndex(type) {
+            const types = ['chinese', 'english', 'family'];
+            return types.indexOf(type) + 1;
+        }
+
+        function setupOptions(type) {
+            const correctAnswer = currentPlant[type];
+            const options = generateOptions(correctAnswer, type);
+            const container = document.getElementById(`${type}Options`);
+            
+            container.innerHTML = '';
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectOption(type, option, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectOption(type, value, button) {
+            // 清除其他選項的選中狀態
+            const siblings = button.parentNode.querySelectorAll('.option-btn');
+            siblings.forEach(btn => btn.classList.remove('selected'));
+            
+            // 選中當前選項
+            button.classList.add('selected');
+            selectedAnswers[type] = value;
+        }
+
+        function nextQuestion() {
+            currentPlant = getRandomPlant();
+            document.getElementById('scientificName').textContent = currentPlant.scientific;
+            
+            // 清空所有輸入
+            document.getElementById('chineseInput').value = '';
+            document.getElementById('englishInput').value = '';
+            document.getElementById('familyInput').value = '';
+            
+            // 重置選擇答案
+            selectedAnswers = {chinese: '', english: '', family: ''};
+            
+            // 如果是選擇模式，重新生成選項
+            if (currentMode.chinese === 'choice') setupOptions('chinese');
+            if (currentMode.english === 'choice') setupOptions('english');
+            if (currentMode.family === 'choice') setupOptions('family');
+            
+            // 清除結果顯示
+            document.getElementById('result').style.display = 'none';
+        }
+
+        function checkAnswer() {
+            total++;
+            let correctCount = 0;
+            let results = [];
+            
+            // 檢查中文名稱
+            const chineseAnswer = currentMode.chinese === 'input' 
+                ? document.getElementById('chineseInput').value.trim()
+                : selectedAnswers.chinese;
+            const chineseCorrect = chineseAnswer === currentPlant.chinese;
+            if (chineseCorrect) correctCount++;
+            
+            // 檢查英文名稱
+            const englishAnswer = currentMode.english === 'input'
+                ? document.getElementById('englishInput').value.trim()
+                : selectedAnswers.english;
+            const englishCorrect = englishAnswer.toLowerCase() === currentPlant.english.toLowerCase();
+            if (englishCorrect) correctCount++;
+            
+            // 檢查科名
+            const familyAnswer = currentMode.family === 'input'
+                ? document.getElementById('familyInput').value.trim()
+                : selectedAnswers.family;
+            const familyCorrect = familyAnswer === currentPlant.family;
+            if (familyCorrect) correctCount++;
+            
+            // 計算分數
+            if (correctCount === 3) {
+                score++;
+                results.push('🎉 完全正確！');
+            } else {
+                results.push('❌ 有部分錯誤');
+                if (!chineseCorrect) results.push(`中文名稱正確答案：${currentPlant.chinese}`);
+                if (!englishCorrect) results.push(`英文名稱正確答案：${currentPlant.english}`);
+                if (!familyCorrect) results.push(`科名正確答案：${currentPlant.family}`);
+            }
+            
+            // 顯示結果
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${correctCount === 3 ? 'correct' : 'incorrect'}`;
+            resultDiv.innerHTML = results.join('<br>');
+            resultDiv.style.display = 'block';
+            
+            // 更新分數
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = total;
+        }
+
+        // 初始化
+        nextQuestion();
+    </script>
+</body>
+</html>
